@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}POS Dash{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/static/assets/images/favicon.ico" />
+    <link rel="stylesheet" href="/static/assets/css/backend-plugin.min.css">
+    <link rel="stylesheet" href="/static/assets/css/backend.css?v=1.0.0">
+    <link rel="stylesheet" href="/static/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="/static/assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css">
+    <link rel="stylesheet" href="/static/assets/vendor/remixicon/fonts/remixicon.css">
+    
+
+    <style>
+      #dashboards {
+        width: 1188px; 
+        height: 2027px;
+        .iq-submenu {
+          transition: all 0.3s ease;
+          overflow: hidden;
+        }
+      
+        .iq-submenu.collapse:not(.show) {
+          display: none;
+        }
+      
+        .iq-submenu.collapsing {
+          height: 0;
+        }
+      
+        /* Thêm hiệu ứng xoay cho mũi tên */
+        .submenu-arrow {
+          transition: transform 0.3s ease;
+        }
+      
+        [aria-expanded="true"] .submenu-arrow {
+          transform: rotate(90deg);
+        }
+      
+        /* Style cho submenu items */
+        .iq-submenu li a {
+          padding: 10px 0 10px 45px;
+          display: block;
+          color: #8A92A6;
+          position: relative;
+          transition: all 0.3s ease;
+        }
+      
+        .iq-submenu li a:hover {
+          color: #3378FF;
+          padding-left: 50px;
+        }
+      
+        /* Hiệu ứng active cho submenu item */
+        .iq-submenu li.active a {
+          color: #3378FF;
+          background: rgba(51, 120, 255, 0.1);
+        }    
+      }
+    </style>
+
+    {% block custom_css %}
+    <!-- Place to include additional custom CSS from child templates -->
+    {% endblock %}
+  </head>
+
+  <body class="">
+    <!-- loader Start -->
+    <div id="loading">
+      <div id="loading-center"></div>
+    </div>
+    <!-- loader END -->
+
+    <!-- Wrapper Start -->
+    <div class="wrapper">
+      
+      <div class="wrapper">
+        <!-- Sidebar Start -->
+        <div class="iq-sidebar sidebar-default">
+          <div class="iq-sidebar-logo d-flex align-items-center justify-content-between">
+            <a href="/" class="header-logo">
+              <img src="/static/assets/images/logo.png" class="img-fluid rounded-normal light-logo" alt="logo">
+              <h5 class="logo-title light-logo ml-3">POSDash</h5>
+            </a>
+            <div class="iq-menu-bt-sidebar ml-0">
+              <i class="las la-bars wrapper-menu"></i>
+            </div>
+          </div>
+          <div class="data-scrollbar" data-scroll="1">
+            <nav class="iq-sidebar-menu">
+              <ul id="iq-sidebar-toggle" class="iq-menu">
+                <!-- Dashboard - Sử dụng icon thống kê -->
+                <li class="active">
+                  <a href="/" class="svg-icon">
+                    <i class="las la-chart-bar" style="font-size: 20px;"></i>
+                    <span class="ml-4">Dashboards</span>
+                  </a>
+                </li>
+  
+                <!-- Predicting Returning - Sử dụng icon dự đoán/lặp lại -->
+                <li class="active">
+                  <a href="/function/Predicting_Returning_Customers" class="svg-icon">
+                    <i class="las la-sync" style="font-size: 20px;"></i>
+                    <span class="ml-4">Predicting Returning</span>
+                  </a>
+                </li>
+
+                <li class="active">
+                  <a href="/function/no_of_customer"class="svg-icon">
+                    <i class="las la-sync" style="font-size: 20px;"></i>
+                    <span class="ml-4">Customer Forecast</span>
+                  </a>
+                </li>
+  
+                <!-- Segmentation Of Customers - Sử dụng icon phân nhóm người dùng -->
+                <li>
+                  <a href="/function/segmentation_of_customers" class="collapsed" data-toggle="collapse" aria-expanded="false">
+                    <i class="las la-users-cog" style="font-size: 20px;"></i>
+                    <span class="ml-4">Segmentation Of Customers</span>
+                  </a>
+                  <ul id="product" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
+                      <li class="active">
+                          <a href="/function/segmentation_of_customers">
+                              <i class="las la-list"></i><span>List Customers</span>
+                          </a>
+                      </li>
+                      <li class="">
+                          <a href="/function/chart_of_customers">
+                              <i class="las la-chart-pie"></i><span>Chart for Segments</span>
+                          </a>
+                      </li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- Sidebar End -->
+
+      <!-- Navbar Start -->
+      <div class="iq-top-navbar">
+        <div class="iq-navbar-custom">
+          <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-navbar-logo d-flex align-items-center justify-content-between">
+              <i class="ri-menu-line wrapper-menu"></i>
+              <a href="/" class="header-logo">
+                <img src="/static/assets/images/logo.png" class="img-fluid rounded-normal" alt="logo">
+                <h5 class="logo-title ml-3">POSDash</h5>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav ml-auto navbar-list align-items-center">
+                <!-- Navbar Items -->
+                <!-- Add more if needed -->
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+      <!-- Navbar End -->
+
+      <!-- Main Content -->
+      <div class="content-page">
+        <div class="container-fluid" id="dashboards">
+          {% block content %}
+          <!-- Child templates will inject their content here -->
+          {% endblock %}
+        </div>
+      </div>
+
+      <!-- Footer Start -->
+      <footer class="iq-footer">
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <ul class="list-inline mb-0">
+                    <li class="list-inline-item"><a href="/function/privacy-policy">Privacy Policy</a></li>
+                    <li class="list-inline-item"><a href="/function/terms-of-service">Terms of Use</a></li>
+                  </ul>
+                </div>
+                <div class="col-lg-6 text-right">
+                  <span class="mr-1"><script>document.write(new Date().getFullYear())</script>©</span>
+                  <a href="#" class="">POS Dash</a>.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <!-- Footer End -->
+    </div>
+    <!-- Wrapper End-->
+
+    <!-- JavaScript Files -->
+    <script src="/static/assets/js/backend-bundle.min.js"></script>
+    <script src="/static/assets/js/app.js"></script>
+    <script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
+    
+    {% block custom_js %}
+    <!-- Place to include additional custom JavaScript from child templates -->
+    {% endblock %}
+  </body>
+</html>

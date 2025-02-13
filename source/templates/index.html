@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block custom_css %}
+  <!-- Custom CSS cho trang Dashboard -->
+  <style>
+    #dashboards {
+      width: 1188px; 
+      height: 2027px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  
+  <!-- Đây là nơi hiển thị nội dung của trang dashboard -->
+  <div class="container-fluid">
+    <div class="row">
+
+    <!-- Biểu đồ Tableau hoặc bất kỳ widget nào khác -->
+    <div id="tableauViz"></div>
+
+    <script type="text/javascript">
+      var containerDiv = document.getElementById("tableauViz"),
+        url = "https://public.tableau.com/views/YourDashboard/Sheet1",
+        options = {
+          hideTabs: true,
+          onFirstInteractive: function () {
+            console.log("Tableau Dashboard is interactive");
+          }
+        };
+
+      var viz = new tableau.Viz(containerDiv, url, options);
+    </script>
+  </div>
+{% endblock %}
+
+{% block custom_js %}
+  <!-- Custom JavaScript cho trang Dashboard -->
+  <script src="/static/assets/js/dashboard.js"></script>
+{% endblock %}

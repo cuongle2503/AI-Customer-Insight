@@ -1,0 +1,174 @@
+{% extends "layout.html" %}
+
+{% block title %}Segmentation{% endblock %}
+
+{% block custom_css %}
+  <!-- Custom CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  <div class="flex justify-center my-6">
+    <form action="/function/retrain_model_kmeans_1" method="POST">
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Cập nhật và huấn luyện lại mô hình
+        </button>
+    </form>
+  </div>
+  <h3 class="mt-5">Phân Tích Khách Hàng Theo Tần Suất và Thời Gian</h3>
+  <div>
+    <canvas id="scatterPlot"></canvas>
+  </div>
+
+  <h3 class="mt-5">Tỷ Lệ Các Nhóm Khách Hàng</h3>
+  <div style="max-width: 400px; margin: 0 auto;">
+    <canvas id="pieChart"></canvas>
+  </div>
+
+  <h3 class="mt-5">So Sánh Giá Trị Trung Bình Các Nhóm Khách Hàng</h3>
+  <div>
+    <canvas id="barChart"></canvas>
+  </div>
+{% endblock %}
+
+{% block custom_js %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Data từ Flask
+    const rfmData = {{ rfm_data | safe }};
+    const clusterSummary = {{ cluster_summary | safe }};
+
+    // Tách dữ liệu theo từng phân khúc khách hàng (Cluster)
+    const scatterData = {
+      datasets: [
+        {
+          label: 'Low Value Customers',
+          data: rfmData.filter(customer => customer.Cluster === 0).map(customer => ({
+            x: customer.Recency,
+            y: customer.Frequency,
+            r: Math.log(customer.Monetary + 1),
+          })),
+          backgroundColor: 'rgba(255, 99, 132, 0.2)', // Màu cho phân khúc Low Value
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+        },
+        {
+          label: 'Medium Value Customers',
+          data: rfmData.filter(customer => customer.Cluster === 1).map(customer => ({
+            x: customer.Recency,
+            y: customer.Frequency,
+            r: Math.log(customer.Monetary + 1),
+          })),
+          backgroundColor: 'rgba(54, 162, 235, 0.2)', // Màu cho phân khúc Medium Value
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+        },
+        {
+          label: 'High Value Customers',
+          data: rfmData.filter(customer => customer.Cluster === 2).map(customer => ({
+            x: customer.Recency,
+            y: customer.Frequency,
+            r: Math.log(customer.Monetary + 1),
+          })),
+          backgroundColor: 'rgba(75, 192, 192, 0.2)', // Màu cho phân khúc High Value
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        }
+      ]
+    };
+
+    // Tùy chọn cho biểu đồ phân tán
+    const scatterOptions = {
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Recency'
+          },
+          min: 0,
+          max: 400
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Frequency'
+          },
+          min: 0,
+          max: 1000
+        }
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const customer = rfmData[context.dataIndex];
+              return `Recency: ${customer.Recency}, Frequency: ${customer.Frequency}, Monetary: ${customer.Monetary}`;
+            }
+          }
+        }
+      }
+    };
+
+// Khởi tạo biểu đồ phân tán
+new Chart(document.getElementById('scatterPlot'), {
+  type: 'bubble',
+  data: scatterData,
+  options: scatterOptions
+});
+
+    // Tạo dữ liệu cho biểu đồ Pie Chart
+    const pieData = {
+      labels: ['Low Value', 'Medium Value', 'High Value'],
+      datasets: [{
+        data: clusterSummary.map(cluster => cluster['Customer Count']),
+        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(75, 192, 192, 0.2)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
+        borderWidth: 1
+      }]
+    };
+
+    new Chart(document.getElementById('pieChart'), {
+      type: 'pie',
+      data: pieData
+    });
+
+    // Tạo dữ liệu cho biểu đồ Bar Chart
+    const barData = {
+      labels: ['Low Value', 'Medium Value', 'High Value'],
+      datasets: [
+        {
+          label: 'Recency',
+          data: clusterSummary.map(cluster => cluster['Mean Recency']),
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1
+        },
+        {
+          label: 'Frequency',
+          data: clusterSummary.map(cluster => cluster['Mean Frequency']),
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        },
+        {
+          label: 'Monetary',
+          data: clusterSummary.map(cluster => cluster['Mean Monetary']),
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }
+      ]
+    };
+
+    new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: barData,
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+{% endblock %}
